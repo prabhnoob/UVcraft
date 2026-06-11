@@ -1,0 +1,26 @@
+.game-screen {
+  width: 100vw;
+  height: 100vh;
+  background: #111;
+  position: relative;
+}
+
+.ui-panel {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  color: white;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 16px 20px;
+  border-radius: 12px;
+  font-family: Arial, sans-serif;
+}
+
+.ui-panel h1 {
+  margin: 0 0 6px 0;
+  font-size: 28px;
+}
+
+.ui-panel p {
+  margin: 4px 0;
+}
