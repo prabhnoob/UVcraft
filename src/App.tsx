@@ -146,9 +146,12 @@ export default function App() {
           <strong>1 unit = 1 m</strong>
         </div>
         <div className="hud-keys">
-          <span>WASD</span>
-          <span>Shift</span>
-          <span>Space</span>
+          <span className="desktop-key">WASD</span>
+          <span className="desktop-key">Shift</span>
+          <span className="desktop-key">Space</span>
+          <span className="touch-key">Move</span>
+          <span className="touch-key">Look</span>
+          <span className="touch-key">Jump</span>
         </div>
       </div>
 

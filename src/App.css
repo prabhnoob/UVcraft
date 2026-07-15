@@ -105,6 +105,10 @@
   text-align: center;
 }
 
+.touch-key {
+  display: none;
+}
+
 .crosshair {
   position: fixed;
   left: 50%;
@@ -162,13 +166,9 @@
   .brand-note {
     display: none;
   }
-
-  .hud-keys span:nth-child(1)::before {
-    content: "Touch ";
-  }
 }
 
-@media (pointer: coarse) {
+@media (hover: none) and (pointer: coarse) {
   .touch-controls {
     position: fixed;
     inset: 0;
@@ -258,9 +258,17 @@
     font-size: 11px;
     font-weight: 700;
   }
+
+  .desktop-key {
+    display: none;
+  }
+
+  .touch-key {
+    display: block;
+  }
 }
 
-@media (pointer: coarse) and (max-height: 520px) {
+@media (hover: none) and (pointer: coarse) and (max-height: 520px) {
   .brand-hud,
   .play-hud {
     transform: scale(0.86);
