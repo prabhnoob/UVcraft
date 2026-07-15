@@ -4,6 +4,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { BUILDINGS, buildingPosition, buildingRotation } from "./geo";
 import { mobileInput } from "./mobileInput";
+import { sendPlayerUpdate } from "./multiplayer";
 import { terrainHeight } from "./terrain";
 
 const EYE_HEIGHT = 1.72;
@@ -65,6 +66,7 @@ export function FirstPersonPlayer() {
   const right = useMemo(() => new THREE.Vector3(), []);
   const move = useMemo(() => new THREE.Vector3(), []);
   const cameraEuler = useMemo(() => new THREE.Euler(0, 0, 0, "YXZ"), []);
+  const syncTimer = useRef(0);
   const boxes = useMemo(makeCollisionBoxes, []);
 
   useEffect(() => {
@@ -157,6 +159,19 @@ export function FirstPersonPlayer() {
     }
 
     camera.position.set(nextX, nextY, nextZ);
+
+    syncTimer.current += dt;
+    if (syncTimer.current >= 0.08) {
+      syncTimer.current = 0;
+      cameraEuler.setFromQuaternion(camera.quaternion);
+      sendPlayerUpdate({
+        x: camera.position.x,
+        y: camera.position.y,
+        z: camera.position.z,
+        yaw: cameraEuler.y,
+        pitch: cameraEuler.x,
+      });
+    }
   });
 
   return <PointerLockControls ref={controlsRef} />;

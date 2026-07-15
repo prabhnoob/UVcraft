@@ -1,12 +1,15 @@
 import { Canvas } from "@react-three/fiber";
 import { Sky } from "@react-three/drei";
 import { useRef, useState } from "react";
+import { useSyncExternalStore } from "react";
 import "./App.css";
 import { mobileInput } from "./mobileInput";
+import { connectMultiplayer, disconnectMultiplayer, getMultiplayerSnapshot, subscribeToMultiplayer } from "./multiplayer";
+import { RemotePlayers } from "./RemotePlayers";
 import { World } from "./world";
 import { FirstPersonPlayer } from "./player";
 
-function Scene() {
+function Scene({ players }: { players: ReturnType<typeof getMultiplayerSnapshot>["players"] }) {
   return (
     <>
       <ambientLight intensity={0.55} color="#c8d8ff" />
@@ -29,6 +32,7 @@ function Scene() {
       <hemisphereLight args={["#b0d0ff", "#4a7a30", 0.32]} />
       <Sky sunPosition={[100, 30, 70]} rayleigh={0.8} turbidity={4} mieCoefficient={0.003} mieDirectionalG={0.92} />
       <World />
+      <RemotePlayers players={players} />
       <FirstPersonPlayer />
     </>
   );
@@ -125,7 +129,43 @@ function TouchControls() {
   );
 }
 
+function CoopPanel() {
+  const multiplayer = useSyncExternalStore(subscribeToMultiplayer, getMultiplayerSnapshot);
+  const [name, setName] = useState(() => localStorage.getItem("uvcraft:name") || "Player");
+  const [room, setRoom] = useState(() => localStorage.getItem("uvcraft:room") || "uvcraft");
+
+  const join = () => {
+    localStorage.setItem("uvcraft:name", name);
+    localStorage.setItem("uvcraft:room", room);
+    connectMultiplayer({ name, room });
+  };
+
+  return (
+    <div className="coop-panel">
+      <div className="coop-header">
+        <span>LAN Co-op</span>
+        <strong>{multiplayer.connected ? `${multiplayer.players.length + 1} online` : multiplayer.connecting ? "joining" : "offline"}</strong>
+      </div>
+      <div className="coop-fields">
+        <input aria-label="Player name" value={name} maxLength={18} onChange={(event) => setName(event.target.value)} />
+        <input aria-label="Room name" value={room} maxLength={18} onChange={(event) => setRoom(event.target.value)} />
+      </div>
+      <div className="coop-actions">
+        <button type="button" onClick={join} disabled={multiplayer.connecting}>
+          {multiplayer.connected ? "Rejoin" : multiplayer.connecting ? "Joining..." : "Join"}
+        </button>
+        <button type="button" onClick={disconnectMultiplayer} disabled={!multiplayer.connected && !multiplayer.connecting}>
+          Leave
+        </button>
+      </div>
+      {multiplayer.error ? <div className="coop-error">{multiplayer.error}</div> : null}
+    </div>
+  );
+}
+
 export default function App() {
+  const multiplayer = useSyncExternalStore(subscribeToMultiplayer, getMultiplayerSnapshot);
+
   return (
     <div className="game-screen">
       <div className="brand-hud">
@@ -155,11 +195,12 @@ export default function App() {
         </div>
       </div>
 
+      <CoopPanel />
       <div className="crosshair" />
       <TouchControls />
 
       <Canvas camera={{ position: [72, 4, 122], fov: 72, near: 0.05, far: 5000 }} shadows gl={{ antialias: true, logarithmicDepthBuffer: true }}>
-        <Scene />
+        <Scene players={multiplayer.players} />
       </Canvas>
     </div>
   );

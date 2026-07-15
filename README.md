@@ -1,73 +1,80 @@
-# React + TypeScript + Vite
+# UVCraft
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A browser-based 3D University of Victoria campus walk built with React, Vite, Three.js, and React Three Fiber.
 
-Currently, two official plugins are available:
+## Local Single Player
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```powershell
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Open the local URL Vite prints in the terminal.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## LAN Co-op
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Use this when players are on the same Wi-Fi/network.
+
+1. On the host PC, start the multiplayer server:
+
+```powershell
+npm run server
 ```
+
+2. In another terminal on the same host PC, start the game for LAN access:
+
+```powershell
+npm run dev:lan
+```
+
+3. Find the host PC's local IP address:
+
+```powershell
+ipconfig
+```
+
+Look for the IPv4 address, such as `192.168.1.42`.
+
+4. On each device, open the host PC's game URL:
+
+```text
+http://HOST_PC_IP:5173
+```
+
+Example:
+
+```text
+http://192.168.1.42:5173
+```
+
+5. In the game, enter a name and room, then press `Join`.
+
+Players using the same room name will see each other in the campus world.
+
+## Controls
+
+PC:
+
+- Click the game to enter walk mode.
+- `WASD` to move.
+- Mouse to look.
+- `Shift` to sprint.
+- `Space` to jump.
+- `Esc` to release the cursor.
+
+Phone:
+
+- Left joystick to move.
+- Drag on the right side to look.
+- `Jump` button to jump.
+- Push the joystick far out to sprint.
+
+## GitHub Pages
+
+The static single-player build is deployed by GitHub Actions to:
+
+```text
+https://prabhnoob.github.io/UVcraft/
+```
+
+LAN co-op should be run from the host PC's local `http://HOST_PC_IP:5173` URL so phones can connect back to the local multiplayer server.
