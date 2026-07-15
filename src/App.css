@@ -4,6 +4,8 @@
   background: #111;
   position: relative;
   overflow: hidden;
+  touch-action: none;
+  user-select: none;
 }
 
 .brand-hud,
@@ -139,11 +141,15 @@
   height: 2px;
 }
 
+.touch-controls {
+  display: none;
+}
+
 @media (max-width: 720px) {
   .play-hud {
     top: auto;
     right: 12px;
-    bottom: 12px;
+    bottom: 118px;
     width: min(236px, calc(100vw - 24px));
   }
 
@@ -151,6 +157,118 @@
     top: 12px;
     left: 12px;
     width: min(315px, calc(100vw - 24px));
+  }
+
+  .brand-note {
+    display: none;
+  }
+
+  .hud-keys span:nth-child(1)::before {
+    content: "Touch ";
+  }
+}
+
+@media (pointer: coarse) {
+  .touch-controls {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    display: block;
+    pointer-events: none;
+    font-family: "Courier New", monospace;
+  }
+
+  .touch-joystick,
+  .touch-look-pad,
+  .touch-jump {
+    pointer-events: auto;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .touch-joystick {
+    position: absolute;
+    left: 22px;
+    bottom: 24px;
+    width: 132px;
+    height: 132px;
+    border: 1px solid rgba(231, 242, 220, 0.28);
+    border-radius: 50%;
+    background: rgba(7, 12, 8, 0.42);
+    box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.035), 0 12px 34px rgba(0, 0, 0, 0.24);
+    backdrop-filter: blur(8px);
+  }
+
+  .touch-joystick::before {
+    content: "";
+    position: absolute;
+    inset: 22px;
+    border: 1px solid rgba(216, 208, 160, 0.2);
+    border-radius: 50%;
+  }
+
+  .touch-joystick-thumb {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 54px;
+    height: 54px;
+    margin: -27px 0 0 -27px;
+    border: 1px solid rgba(216, 208, 160, 0.46);
+    border-radius: 50%;
+    background: rgba(184, 230, 173, 0.28);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.24);
+  }
+
+  .touch-look-pad {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 55vw;
+  }
+
+  .touch-look-pad::after {
+    content: "";
+    position: absolute;
+    right: 22px;
+    bottom: 108px;
+    width: 86px;
+    height: 86px;
+    border: 1px solid rgba(231, 242, 220, 0.16);
+    border-radius: 50%;
+    background:
+      linear-gradient(rgba(231, 242, 220, 0.24), rgba(231, 242, 220, 0.24)) center / 38px 1px no-repeat,
+      linear-gradient(90deg, rgba(231, 242, 220, 0.24), rgba(231, 242, 220, 0.24)) center / 1px 38px no-repeat,
+      rgba(7, 12, 8, 0.2);
+  }
+
+  .touch-jump {
+    position: absolute;
+    right: 34px;
+    bottom: 26px;
+    width: 78px;
+    height: 78px;
+    border: 1px solid rgba(216, 208, 160, 0.48);
+    border-radius: 50%;
+    color: #f0e6b8;
+    background: rgba(7, 12, 8, 0.58);
+    box-shadow: 0 12px 34px rgba(0, 0, 0, 0.24);
+    backdrop-filter: blur(8px);
+    font-size: 11px;
+    font-weight: 700;
+  }
+}
+
+@media (pointer: coarse) and (max-height: 520px) {
+  .brand-hud,
+  .play-hud {
+    transform: scale(0.86);
+    transform-origin: top left;
+  }
+
+  .play-hud {
+    transform-origin: bottom right;
   }
 }
 

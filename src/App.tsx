@@ -1,6 +1,8 @@
 import { Canvas } from "@react-three/fiber";
 import { Sky } from "@react-three/drei";
+import { useRef, useState } from "react";
 import "./App.css";
+import { mobileInput } from "./mobileInput";
 import { World } from "./world";
 import { FirstPersonPlayer } from "./player";
 
@@ -32,6 +34,97 @@ function Scene() {
   );
 }
 
+const JOYSTICK_RADIUS = 54;
+
+function TouchControls() {
+  const movePointer = useRef<number | null>(null);
+  const lookPointer = useRef<number | null>(null);
+  const moveOrigin = useRef({ x: 0, y: 0 });
+  const lastLook = useRef({ x: 0, y: 0 });
+  const [stick, setStick] = useState({ x: 0, y: 0 });
+
+  const setMove = (clientX: number, clientY: number) => {
+    const dx = clientX - moveOrigin.current.x;
+    const dy = clientY - moveOrigin.current.y;
+    const distance = Math.min(Math.hypot(dx, dy), JOYSTICK_RADIUS);
+    const angle = Math.atan2(dy, dx);
+    const x = Math.cos(angle) * distance;
+    const y = Math.sin(angle) * distance;
+
+    setStick({ x, y });
+    mobileInput.moveX = x / JOYSTICK_RADIUS;
+    mobileInput.moveY = -y / JOYSTICK_RADIUS;
+    mobileInput.active = true;
+  };
+
+  return (
+    <div className="touch-controls" aria-label="Touch movement controls">
+      <div
+        className="touch-joystick"
+        onPointerDown={(event) => {
+          movePointer.current = event.pointerId;
+          moveOrigin.current = { x: event.clientX, y: event.clientY };
+          event.currentTarget.setPointerCapture(event.pointerId);
+          setMove(event.clientX, event.clientY);
+        }}
+        onPointerMove={(event) => {
+          if (movePointer.current === event.pointerId) setMove(event.clientX, event.clientY);
+        }}
+        onPointerUp={(event) => {
+          if (movePointer.current !== event.pointerId) return;
+          movePointer.current = null;
+          mobileInput.moveX = 0;
+          mobileInput.moveY = 0;
+          setStick({ x: 0, y: 0 });
+        }}
+        onPointerCancel={() => {
+          movePointer.current = null;
+          mobileInput.moveX = 0;
+          mobileInput.moveY = 0;
+          setStick({ x: 0, y: 0 });
+        }}
+      >
+        <div className="touch-joystick-thumb" style={{ transform: `translate(${stick.x}px, ${stick.y}px)` }} />
+      </div>
+
+      <div
+        className="touch-look-pad"
+        onPointerDown={(event) => {
+          lookPointer.current = event.pointerId;
+          lastLook.current = { x: event.clientX, y: event.clientY };
+          mobileInput.active = true;
+          event.currentTarget.setPointerCapture(event.pointerId);
+        }}
+        onPointerMove={(event) => {
+          if (lookPointer.current !== event.pointerId) return;
+          mobileInput.lookX += event.clientX - lastLook.current.x;
+          mobileInput.lookY += event.clientY - lastLook.current.y;
+          lastLook.current = { x: event.clientX, y: event.clientY };
+        }}
+        onPointerUp={(event) => {
+          if (lookPointer.current === event.pointerId) lookPointer.current = null;
+        }}
+        onPointerCancel={() => {
+          lookPointer.current = null;
+        }}
+      />
+
+      <button
+        className="touch-jump"
+        type="button"
+        aria-label="Jump"
+        onPointerDown={(event) => {
+          mobileInput.active = true;
+          mobileInput.jump = true;
+          event.preventDefault();
+        }}
+      >
+        Jump
+      </button>
+    </div>
+  );
+}
+
 export default function App() {
   return (
     <div className="game-screen">
@@ -60,6 +153,7 @@ export default function App() {
       </div>
 
       <div className="crosshair" />
+      <TouchControls />
 
       <Canvas camera={{ position: [72, 4, 122], fov: 72, near: 0.05, far: 5000 }} shadows gl={{ antialias: true, logarithmicDepthBuffer: true }}>
         <Scene />
